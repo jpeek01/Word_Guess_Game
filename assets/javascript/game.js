@@ -1,60 +1,134 @@
 
 var game = {
     gameWords: ["gryffindor","hermione","hogwarts","quidditch","Snape","dumbledore","mcgonagall","longbottom","voldemort","accio","avadakedavra"],
+    wordsPlayed: [],
     currentWord: "",
-    currentWordMask: [],
-    userGuesses: [],
-    guessesRemaining: 1,
+    correctGuesses: 0,
+    wordMask: [],
+    userGuess: "",
+    previousGuesses: [],
+    anyKeyCheck: true,
     incorrectGuesses: 3,
+    numberOfWins: 0,
+    gameNumber: 1,
 };
 
-game.currentWord = game.gameWords[Math.floor(Math.random() * game.gameWords.length)];
+// get a random word from the word array and make it lower case
+game.currentWord = game.gameWords[Math.floor(Math.random() * game.gameWords.length)].toLowerCase();
+    
+// create the mask to place on the screen to obsucre the word from the user
+for (let i = 0; i < game.currentWord.length; i++) {
+    game.wordMask[i] = '_'
+}
 
-var numberOfWins = 0;
-var numberOfGuess;
-var userGuess;
-var gameBegin = true;
 
-game.guessesRemaining = game.currentWord.length;
-wordMask = mask(game.currentWord);
-
+// capture the user input and run the logic against it
 document.onkeyup = function(event) {
-    console.log(event);
 
-    userGuess = event.key;
+    game.userGuess = event.key.toLowerCase(); //  assign the keypress to the object
 
-    if (game.currentWord.indexOf(userGuess) === -1  && game.incorrectGuesses <= 3) {
-        alert("bad guess " + userGuess);
-        game.incorrectGuesses--;
-    } else if (userGuess == 'r' && game.incorrectGuesses <= 3) {
-        alert("it's in there")
+        if (game.userGuess == 'f5') {
 
-        updateMask(wordMask, userGuess, game.currentWord.indexOf(userGuess));
-    }
-    // } else {
-    //     alert("game over")
-    // }
+        } else if (game.anyKeyCheck == true) {
+            game.anyKeyCheck = false;
+            updateScreen();
 
+        } else if (game.incorrectGuesses <= 0) { //check if the user has guesses remaining. end game if they don't
+
+            gameboardUpdate = '<p class="text-center UserMessages"> You lose </p>';
+            updateScreen();
+
+            // nextGame ();
+
+        } else if (game.previousGuesses.indexOf(game.userGuess) >= 0) { //check if the user already used a letter by checking the array of used guesses
+
+            alert("You've already guessed that");
+
+            updateScreen();
+
+        } else if (game.currentWord.indexOf(game.userGuess) == -1 && game.incorrectGuesses >= 1) {
+
+            game.incorrectGuesses--;
+            
+            game.previousGuesses.push(event.key.toLowerCase());
+            updateScreen();
+
+        } else if (game.currentWord.indexOf(game.userGuess) >= 0) {
+
+            updateMask(game.wordMask, game.userGuess, game.currentWord);
+
+            game.previousGuesses.push(event.key.toLowerCase());
+            updateScreen();
+
+            if (game.correctGuesses == game.currentWord.length) {
+                gameboardUpdate = '<p class="text-center UserMessages"> You win </p>';
+                updateScreen()
+            };
+        }
+    
+        var gameboardUpdate =
+        '<p>Game: ' + game.gameNumber + '</p>' +
+        '<p>Your word is ' + game.currentWord + '</p>' +
+        '<p>Your word is ' + game.wordMask.join("") + '</p>' +
+        '<p>Letters guessed: ' + game.previousGuesses + '</p>' +
+        '<p>' + game.incorrectGuesses + ' incorrect guesses remaining' + '</p>' +
+        '<p>' + game.correctGuesses + ' Correct guesses of ' + game.currentWord.length + '</p>' +
+        '<p> You have won ' + game.numberOfWins + ' games.' + '</p>'
+        ;
+
+        // updateScreen(html)
+
+    }; // End OnKeyUp event
+
+function updateScreen() {
+    
     var html =
+    '<p>Game: ' + game.gameNumber + '</p>' +
     '<p>Your word is ' + game.currentWord + '</p>' +
-    '<p>Your word is ' + wordMask + '</p>' +
-    '<p>' + game.incorrectGuesses + ' incorrect guesses remaining' + '</p>'
+    '<p>Your word is ' + game.wordMask.join("") + '</p>' +
+    '<p>Letters guessed: ' + game.previousGuesses + '</p>' +
+    '<p>' + game.incorrectGuesses + ' incorrect guesses remaining' + '</p>' +
+    '<p> You have won ' + game.numberOfWins + ' games.' + '</p>'
     ;
 
-  document.querySelector("#currentGameDiv").innerHTML = html;
-};
+    document.querySelector("#currentGameDiv").innerHTML = html;
+}
 
+function updateMask(wordMask, guess, word) {
+    
+    var updatedMask = wordMask;
 
-function mask(word) {
-      var masked = word.substring(0, word.length).replace(/[a-zA-Z]/g,"_")
-      return masked;
+    for (let i = 0; i < word.length; i++) {
+       if (word.charAt(i) == guess){
+        updatedMask[i] = guess;
+        game.correctGuesses++;
+       }
     }
+    
+    return updatedMask;
+}
 
-function updateMask(masked, guess, position) {
-    masked = masked.substring(position).replace(/[_]/,guess);
-    alert("got here " + guess + masked );
-    return masked;
-    }
+function startGame (game) {
+    game.gameWords.splice(games.gameWords.indexOf(game.currentWord),1);
+    // game.currentWord = game.gameWords[Math.floor(Math.random() * game.gameWords.length)];
+    game.incorrectGuesses = 3;
+    game.userGuesses = [];
+    game.numberOfWins++;
+    game.gameNumber++;
+
+    var html =
+    '<p>Game ' + game.currentWord + '</p>' +
+    '<p>Your word is ' + game.currentWord + '</p>' +
+    '<p>Your word is ' + game.wordMask.join("") + '</p>' +
+    '<p>Letters guessed: ' + game.userGuesses + '</p>' +
+    '<p>' + game.incorrectGuesses + ' incorrect guesses remaining' + '</p>' +
+    '<p> You have won ' + game.gameNumber + ' games.' + '</p>'
+    ;
+
+    document.querySelector("#currentGameDiv").innerHTML = html;
+
+    alert("Next Game")
+}
 
 
 
