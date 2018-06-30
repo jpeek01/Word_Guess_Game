@@ -77,11 +77,10 @@ function updateScreen(game) {
     
     var html =
     '<p>Game: ' + game.gameNumber + '</p>' +
-    '<p>Your word is ' + game.currentWord + '</p>' +
     '<p>Your word is ' + game.wordMask.join("") + '</p>' +
     '<p>Letters guessed: ' + game.previousGuesses + '</p>' +
     '<p>' + game.incorrectGuessesRemaining + ' incorrect guesses remaining' + '</p>'+
-    '<p>Correct letter: ' + game.correctGuesses + '</p>'
+    '<p>Correct letters guessed: ' + game.correctGuesses + '</p>'
     ;
 
     if (game.numberOfWins == 1) {
