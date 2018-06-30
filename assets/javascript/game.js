@@ -89,7 +89,7 @@ function updateScreen(game) {
         html = html + '<p> You have won ' + game.numberOfWins + ' games out of ' + (game.gameNumber - 1) + '.</p>'
     }
 
-    document.querySelector("#gameBoard").innerHTML = html;
+    document.querySelector("#currentGameDiv").innerHTML = html;
 }
 
 function updateMask(wordMask, guess, word) {
